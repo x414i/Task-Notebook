@@ -1,116 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مهامي</title>
+    <title>مدير المهام </title>
 
-    <!-- External Libary Fonts-->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
         rel="stylesheet">
 
-    <!-- External Libary Icons-->
+    <!-- Material Icons -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div style="direction: rtl;">
-        <!-- center div -->
-        <div class="continer">
-            <!-- Task table -->
-            <div class="task-table">
-                <!-- Table and content -->
-                <div class="table-content">
-                    <h1 class="headerTask">مهامي</h1>
-                    <button id="btn-add" class="circler add-btn">
-                        <span class="material-symbols-outlined">
-                            add
-                        </span>
-                    </button>
+    <div class="app-container">
+        <div class="header">
+            <h1>مدير المهام الذكي</h1>
+            <p>نظم مهامك اليومية وأنجز أعمالك بكفاءة عالية مع تطبيق مدير المهام</p>
+        </div>
 
-                    <!-- Task -->
-                    <div id="tasks" class="tasks">
-
-
-                        <!-- Single Task -->
-                        <div class="task">
-                            <!-- Task info -->
-                            <div style="width: 70%;">
-                                <h2 style="color: black;"> Empty</h2>
-                                <!-- Date -->
-                                <div style="color: black;">
-                                    <span class="material-symbols-outlined">
-                                        calendar_month
-                                    </span>
-                                    <span>10/10/2000</span>
-                                </div>
-                            </div>
-                            <!--End Task info -->
-                            <!-- Task Acion -->
-                            <div class="task-action">
-                                <button class="circler" style="background-color:#d9534f; color:white"><span
-                                        class="material-symbols-outlined">
-                                        delete
-                                    </span></button>
-                                <button class="circler" style="background-color:#5cb85c; color:white"><span
-                                        class="material-symbols-outlined">
-                                        check
-                                    </span></button>
-                                <button class="circler" style="background-color:#428bca; color:white"><span
-                                        class="material-symbols-outlined">
-                                        edit
-                                    </span></button>
-                            </div>
-                            <!-- End Task Acion -->
-                        </div>
-                        <div class="task">
-                            <!-- Task info -->
-                            <div style="width: 70%;">
-                                <h2 style="color: black;"> Empty</h2>
-                                <!-- Date -->
-                                <div style="color: black;">
-                                    <span class="material-symbols-outlined">
-                                        calendar_month
-                                    </span>
-                                    <span>10/10/2000</span>
-                                </div>
-                            </div>
-                            <!--End Task info -->
-                            <!-- Task Acion -->
-                            <div style="display: flex;justify-content: space-between;align-items: center;width: 20%;">
-                                <button class="circler" style="background-color:#d9534f; color:white"><span
-                                        class="material-symbols-outlined">
-                                        delete
-                                    </span></button>
-                                <button class="circler" style="background-color:#5cb85c; color:white"><span
-                                        class="material-symbols-outlined">
-                                        check
-                                    </span></button>
-                                <button class="circler" style="background-color:#428bca; color:white"><span
-                                        class="material-symbols-outlined">
-                                        edit
-                                    </span></button>
-                            </div>
-                            <!-- End Task Acion -->
-                        </div>
-                        <!-- End Single Task -->
-                    </div>
-
-
-                </div>
-                <!-- End  Table and content -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3 id="total-tasks">0</h3>
+                <p>المهام الكلية</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="completed-tasks">0</h3>
+                <p>مهام منجزة</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="pending-tasks">0</h3>
+                <p>مهام معلقة</p>
             </div>
         </div>
-        <!--End center div -->
+
+        <div class="task-container">
+            <div class="task-header">
+                <h2>قائمة المهام</h2>
+                <button class="add-btn" id="btn-add">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">جميع المهام</button>
+                <button class="filter-btn" data-filter="completed">المهام المنجزة</button>
+                <button class="filter-btn" data-filter="pending">المهام المعلقة</button>
+            </div>
+
+            <div class="tasks-list" id="tasks">
+                <div class="tasks-section" id="pending-section">
+                    <div class="section-header">
+                        <h3>المهام المعلقة</h3>
+                        <div class="count" id="pending-count">0</div>
+                    </div>
+                    <div id="pending-tasks-list"></div>
+                </div>
+
+                <div class="tasks-section" id="completed-section">
+                    <div class="section-header">
+                        <h3>المهام المنجزة</h3>
+                        <div class="count" id="completed-count">0</div>
+                    </div>
+                    <div id="completed-tasks-list"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Initialize tasks array
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [
+            {
+                title: "إنهاء تقرير المشروع",
+                date: "15/10/2023",
+                isDone: true
+            },
+            {
+                title: "اجتماع مع فريق العمل",
+                date: "18/10/2023",
+                isDone: false
+            },
+            {
+                title: "مراجعة التصميمات الجديدة",
+                date: "20/10/2023",
+                isDone: false
+            },
+            {
+                title: "تحديث قاعدة البيانات",
+                date: "12/10/2023",
+                isDone: true
+            },
+            {
+                title: "كتابة خطة التسويق",
+                date: "22/10/2023",
+                isDone: false
+            }
+        ];
+
+        // DOM elements
+        const tasksContainer = document.getElementById("tasks");
+        const pendingTasksList = document.getElementById("pending-tasks-list");
+        const completedTasksList = document.getElementById("completed-tasks-list");
+        const addButton = document.getElementById("btn-add");
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const pendingSection = document.getElementById("pending-section");
+        const completedSection = document.getElementById("completed-section");
+
+        // Current filter state
+        let currentFilter = "all";
+
+        // Set up event listeners
+        function setupEventListeners() {
+            addButton.addEventListener("click", addNewTask);
+
+            filterButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove("active"));
+                    // Add active class to clicked button
+                    button.classList.add("active");
+                    // Update filter
+                    currentFilter = button.getAttribute("data-filter");
+                    // Apply filter
+                    applyFilter();
+                });
+            });
+        }
+
+        // Render tasks
+        function renderTasks() {
+            // Clear existing tasks
+            pendingTasksList.innerHTML = "";
+            completedTasksList.innerHTML = "";
+
+            // Counters for statistics
+            let total = tasks.length;
+            let completed = 0;
+            let pending = 0;
+
+            // Filter tasks based on current filter
+            const filteredTasks = tasks.filter(task => {
+                if (currentFilter === "completed") return task.isDone;
+                if (currentFilter === "pending") return !task.isDone;
+                return true; // 'all' filter
+            });
+
+            // Group tasks by status
+            tasks.forEach((task, index) => {
+                if (task.isDone) {
+                    completed++;
+                } else {
+                    pending++;
+                }
+
+                if ((currentFilter === "all" || currentFilter === "pending") && !task.isDone) {
+                    renderTask(task, index, pendingTasksList);
+                }
+
+                if ((currentFilter === "all" || currentFilter === "completed") && task.isDone) {
+                    renderTask(task, index, completedTasksList);
+                }
+            });
+
+            // Update statistics
+            document.getElementById("total-tasks").textContent = total;
+            document.getElementById("completed-tasks").textContent = completed;
+            document.getElementById("pending-tasks").textContent = pending;
+
+            // Update section counters
+            document.getElementById("pending-count").textContent = pending;
+            document.getElementById("completed-count").textContent = completed;
+
+            // Show/hide sections based on filter
+            applyFilter();
+
+            // Show empty state if needed
+            if (filteredTasks.length === 0) {
+                const emptyState = document.createElement("div");
+                emptyState.className = "empty-state";
+                emptyState.innerHTML = `
+                    <span class="material-symbols-outlined">assignment</span>
+                    <h3>لا توجد مهام</h3>
+                    <p>انقر على زر الإضافة لإنشاء مهمة جديدة</p>
+                `;
+                tasksContainer.appendChild(emptyState);
+            }
+        }
+
+        // Render a single task
+        function renderTask(task, index, container) {
+            const taskElement = document.createElement("div");
+            taskElement.className = `task ${task.isDone ? "done" : ""}`;
+            taskElement.innerHTML = `
+                <div class="task-info">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-date">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span>${task.date}</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn delete-btn" onclick="deleteTask(${index})">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                    <button class="action-btn check-btn" onclick="toggleTaskStatus(${index})">
+                        <span class="material-symbols-outlined">${task.isDone ? "close" : "check"}</span>
+                    </button>
+                    <button class="action-btn edit-btn" onclick="editTask(${index})">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                </div>
+            `;
+            container.appendChild(taskElement);
+        }
+
+        // Apply current filter to sections
+        function applyFilter() {
+            if (currentFilter === "all") {
+                pendingSection.style.display = "block";
+                completedSection.style.display = "block";
+            } else if (currentFilter === "pending") {
+                pendingSection.style.display = "block";
+                completedSection.style.display = "none";
+            } else if (currentFilter === "completed") {
+                pendingSection.style.display = "none";
+                completedSection.style.display = "block";
+            }
+        }
+
+        // Add new task
+        function addNewTask() {
+            const taskTitle = prompt("أدخل عنوان المهمة الجديدة:");
+            if (taskTitle) {
+                const now = new Date();
+                const date = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+
+                tasks.push({
+                    title: taskTitle,
+                    date: date,
+                    isDone: false
+                });
+
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        // Delete task
+        function deleteTask(index) {
+            if (confirm(`هل تريد حذف المهمة "${tasks[index].title}"؟`)) {
+                tasks.splice(index, 1);
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        // Toggle task status
+        function toggleTaskStatus(index) {
+            tasks[index].isDone = !tasks[index].isDone;
+            saveTasks();
+            renderTasks();
+        }
+
+        // Edit task
+        function editTask(index) {
+            const newTitle = prompt("عدل عنوان المهمة:", tasks[index].title);
+            if (newTitle) {
+                tasks[index].title = newTitle;
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        // Initialize the app
+        document.addEventListener("DOMContentLoaded", () => {
+            setupEventListeners();
+            renderTasks();
+        });
+    </script>
+    <!-- <script src="script.js"></script> -->
 </body>
-<script src="main.js">
-</script>
 
 </html>
